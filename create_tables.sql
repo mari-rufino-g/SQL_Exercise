@@ -1,6 +1,5 @@
--- Gere o script DDL para a criação de cada uma das tabelas representadas no DER
-
--- Tabela ORDER_INFO
+-- Generate DDL script for creating each table represented in the ERD
+-- ORDER_INFO Table
 CREATE TABLE ORDER_INFO (
     order_id BIGINT PRIMARY KEY, 
     hub_index_m10_customer_id INT,
@@ -29,7 +28,7 @@ CREATE TABLE ORDER_INFO (
     FOREIGN KEY (user_producer_id) REFERENCES CUSTOMER(customer_id)
 );
 
--- Tabela ORDER_ITEM
+-- ORDER_ITEM Table
 CREATE TABLE ORDER_ITEM (
     order_item_id BIGINT PRIMARY KEY,
     hub_transaction_date DATE,
@@ -41,7 +40,7 @@ CREATE TABLE ORDER_ITEM (
     FOREIGN KEY (order_id) REFERENCES ORDER_INFO(order_id)
 );
 
--- Tabela ITEM_CATEGORY
+-- ITEM_CATEGORY Table
 CREATE TABLE ITEM_CATEGORY (
     item_category_id BIGINT PRIMARY KEY,
     category_description VARCHAR(255),
@@ -50,7 +49,7 @@ CREATE TABLE ITEM_CATEGORY (
     item_category_name VARCHAR(255)
 );
 
--- Tabela ITEM
+-- ITEM Table
 CREATE TABLE ITEM (
     item_id BIGINT PRIMARY KEY,
     hub_transaction_date DATE,
@@ -72,7 +71,7 @@ CREATE TABLE ITEM (
     FOREIGN KEY (user_producer_id) REFERENCES CUSTOMER(customer_id)
 );
 
--- Tabela CUSTOMER
+-- CUSTOMER Table
 CREATE TABLE CUSTOMER (
     customer_id BIGINT PRIMARY KEY,
     hub_index_m10_customer_id INT,
