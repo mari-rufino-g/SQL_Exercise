@@ -1,12 +1,10 @@
+-- Question 1: List of users with birthday today and more than 1500 sales in January 2020.
 
+-- Assumptions:
+-- * I am selecting only sales as producers and not as affiliates.
+-- * Only completed sales, i.e., release date not null and status different from 'Refund' and 'Chargeback'.
 
--- Pergunta 1: Lista de usuários com aniversário hoje e mais de 1500 vendas em janeiro de 2020.
-
--- Pressupostos:
--- * Estou selecionando apenas vendas como produtores e não como afiliados.
--- * Apenas vendas concluídas, ou seja, data de liberação não nula e status diferente de 'Reembolso' e 'Chargeback'.
-
--- Selecionando usuários cujo aniversário é hoje
+-- Selecting users whose birthday is today
 WITH BirthdayUsers AS (
   SELECT 
     c.customer_id,
@@ -16,35 +14,35 @@ WITH BirthdayUsers AS (
   WHERE CAST(c.user_birthdate AS DATE) = CURDATE()
 )
 
--- Contando as vendas dos aniversariantes de hoje realizadas em janeiro de 2020.
+-- Counting the sales of today's birthday users made in January 2020.
 SELECT 
-  bu.customer_id as user_id
+  bu.customer_id as user_id,
   bu.user_email,
   bu.user_name,
   COUNT(*) AS total_sales
 FROM BirthdayUsers bu
 INNER JOIN Order_info o ON bu.customer_id = o.user_producer_id
-WHERE YEAR(o.order_realease_date) = 2020
-  AND MONTH(o.order_realease_date) = 1
-  -- filtrando apenas vendas aprovadas
-  AND o.order_status NOT IN ('Reembolso', 'Chargeback') 
+WHERE YEAR(o.order_release_date) = 2020
+  AND MONTH(o.order_release_date) = 1
+  -- filtering only approved sales
+  AND o.order_status NOT IN ('Refund', 'Chargeback') 
 GROUP BY 1,2,3
--- filtrando mais de 1500 vendas
+-- filtering more than 1500 sales
 HAVING COUNT(*) > 1500 
 ORDER BY total_sales DESC;
 
 
 
--- Pergunta 2 
--- Para cada mês de 2020, são solicitados os 5 principais usuários que mais venderam (R$) na categoria Celulares. 
--- São obrigatórios o mês e ano da análise, nome e sobrenome do vendedor, quantidade de vendas realizadas, quantidade de produtos vendidos e valor total transacionado.
+-- Question 2 
+-- For each month of 2020, the top 5 users who sold the most (R$) in the Mobile Phones category are requested. 
+-- The month and year of analysis, seller's first and last name, number of sales made, quantity of products sold and total transaction value are mandatory.
 
---Pressupostos:
--- * Mais venderam - Em termos de valor transacionado e não de volume
--- * Transacoes pagas, ou seja, daata de liberacao nao nula e status diferente de 'Reembolso' e Chargeback
+-- Assumptions:
+-- * Most sold - In terms of transaction value and not volume
+-- * Paid transactions, i.e., release date not null and status different from 'Refund' and 'Chargeback'
 
 
--- Calcula as vendas mensais por usuário na categoria Celulares em 2020
+-- Calculates monthly sales by user in the Mobile Phones category in 2020
 WITH cte_monthly_sales AS (
     SELECT
         LEFT(o.order_release_date, 7) AS month_year, 
@@ -56,44 +54,44 @@ WITH cte_monthly_sales AS (
     INNER JOIN Order_item oi ON o.order_id = oi.order_id
     INNER JOIN Item i ON oi.item_id = i.item_id
     INNER JOIN Item_category ic ON i.item_category_id = ic.item_category_id
-    WHERE ic.item_category_name = 'Celulares'
-    AND o.order_status NOT IN ('Reembolso', 'Chargeback') 
+    WHERE ic.item_category_name = 'Mobile Phones'
+    AND o.order_status NOT IN ('Refund', 'Chargeback') 
     AND LEFT(o.order_release_date, 4) = '2020'
     GROUP BY 1,2
 ),
 
--- Classifica os usuários por mês com base no valor total transacionado
+-- Ranks users by month based on total transaction value
 cte_top5_users_monthly AS (
     SELECT
         month_year,
         user_producer_id,
         total_sales_amount,
         total_orders,
-        total_products_sold
+        total_products_sold,
         ROW_NUMBER() OVER (PARTITION BY month_year ORDER BY total_sales_amount DESC) AS ranking
     FROM cte_monthly_sales
 )
 
--- Seleciona os 5 principais usuários por mês
+-- Selects the top 5 users per month
 SELECT
     t.month_year,
     t.user_producer_id,
     c.user_name,
-    t.total_sales_amount
+    t.total_sales_amount,
     t.total_products_sold,
     t.total_orders
 FROM cte_top5_users_monthly t
 INNER JOIN customer c ON c.user_id = t.user_producer_id
 WHERE ranking <= 5
-ORDER BY  t.month_year, ranking;
+ORDER BY t.month_year, ranking;
 
 
 
 
--- Pergunta 3 
--- É solicitada uma nova tabela a ser preenchida com o preço e status dos Itens no final do dia. Lembre-se de que deve ser reprocessável. Vale ressaltar que na tabela Item teremos apenas o último status informado pelo PK definido. (Pode ser resolvido através de StoredProcedure)
+-- Question 3 
+-- A new table is requested to be populated with the price and status of Items at the end of the day. Remember that it must be reprocessable. It's worth noting that in the Item table we will only have the last status informed by the defined PK. (Can be solved through StoredProcedure)
 
--- Tabela ITEM_HIST_PRICE
+-- ITEM_HIST_PRICE Table
 CREATE TABLE ITEM_HIST_PRICE (
     item_id BIGINT,
     status_date DATE,
@@ -103,11 +101,11 @@ CREATE TABLE ITEM_HIST_PRICE (
     FOREIGN KEY (item_id) REFERENCES ITEM(item_id)
 );
 
--- Stored Procedure para atualizar ITEM_HIST_PRICE
+-- Stored Procedure to update ITEM_HIST_PRICE
 DELIMITER //
 CREATE PROCEDURE Update_Item_Hist_Price()
 BEGIN
-    -- Insere o preço e status atual de cada item no final do dia
+    -- Inserts the current price and status of each item at the end of the day
     INSERT INTO ITEM_HIST_PRICE (item_id, status_date, item_price, item_status)
     SELECT 
         item_id, 
@@ -122,6 +120,5 @@ BEGIN
 END //
 DELIMITER ;
 
--- Chama a Stored Procedure para atualizar ITEM_HIST_PRICE
+-- Calls the Stored Procedure to update ITEM_HIST_PRICE
 CALL Update_Item_Hist_Price();
-
