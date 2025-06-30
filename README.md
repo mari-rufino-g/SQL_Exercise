@@ -1,109 +1,103 @@
-# Projeto de SQL
+# SQL Project
 
-## Descrição do Projeto
+## Project Description
 
-**Customer:** É a entidade onde se encontram todos os clientes, sejam eles Compradores, Vendedores ou Afiliados do Site. Os principais atributos são email, nome, cidade, país, endereço, data de nascimento, telefone, entre outros.
+**Customer:** This is the entity where all customers are found, whether they are Buyers, Sellers, or Affiliates of the Site. The main attributes are email, name, city, country, address, date of birth, phone number, among others.
 
-**Item:** É a entidade onde estão localizados os produtos publicados em nosso marketplace. O volume é muito grande porque estão incluídos todos os produtos que foram publicados em algum momento. Usando o status do item ou a data de cancelamento, você pode detectar os itens ativos no marketplace.
+**Item:** This is the entity where the products published in our marketplace are located. The volume is very large because it includes all products that have been published at some point. Using the item status or cancellation date, you can detect active items in the marketplace.
 
-**Item Category:** É a entidade onde se encontra a descrição de cada categoria com seu respectivo caminho. Cada item possui uma categoria associada a ele.
+**Item Category:** This is the entity where the description of each category with its respective path is found. Each item has a category associated with it.
 
-**Order Info:** O pedido é a entidade que reflete as transações geradas dentro do site (cada compra é um pedido). Optei por assumir o fluxo de carrinho de compras, tal como existe na realidade dentro do marketplace, portanto cada pedido pode ter mais de um item e em diversas quantidades.
+**Order Info:** The order is the entity that reflects the transactions generated within the site (each purchase is an order). I chose to assume the shopping cart flow, as it exists in reality within the marketplace, therefore each order can have more than one item and in various quantities.
 
-**Order item:** Armazena as informações sobre o pedido, tais como quais produtos foram vendidos e suas quantidades.
+**Order Item:** Stores information about the order, such as which products were sold and their quantities.
 
-## Necessidades a serem atendidas
-1. Listar usuários com aniversário de hoje cujo número de vendas realizadas em janeiro de 2020 seja superior a 1500.
-2. Para cada mês de 2020, listar os 5 principais usuários que mais venderam (em R$) na categoria Celulares. A análise deve incluir o mês e ano da análise, nome e sobrenome do vendedor, quantidade de vendas realizadas, quantidade de produtos vendidos e valor total transacionado.
-3. Criar uma nova tabela com o preço e status dos itens no final do dia, garantindo que seja reprocessável. Na tabela Item, apenas o último status informado pelo PK deve ser mantido. (Pode ser resolvido através de Stored Procedure).
-4. Gerar o script DDL para a criação de cada uma das tabelas representadas no DER.
+## Requirements to be Met
+1. List users with birthdays today whose number of sales made in January 2020 is greater than 1500.
+2. For each month of 2020, list the top 5 users who sold the most (in R$) in the Cell Phones category. The analysis should include the month and year of analysis, seller's first and last name, number of sales made, quantity of products sold, and total amount transacted.
+3. Create a new table with the price and status of items at the end of the day, ensuring it is reprocessable. In the Item table, only the last status informed by the PK should be maintained. (Can be solved through Stored Procedure).
+4. Generate the DDL script for creating each of the tables represented in the ERD.
 
-## Dicionário de Dados
+## Data Dictionary
 
 ### CUSTOMER
-| Nome do Campo            | Tipo de Dados | Descrição                                             |
+| Field Name               | Data Type     | Description                                           |
 |--------------------------|---------------|-------------------------------------------------------|
-| customer_id              | BIGINT        | Identificador único para o cliente (PK).              |
-| hub_index_m10_customer_id| INT           | Índice interno para o cliente.                        |
-| user_name                | VARCHAR(255)  | Nome do cliente.                                      |
-| user_email               | VARCHAR(255)  | Endereço de e-mail do cliente.                        |
-| user_birthdate           | DATE          | Data de nascimento do cliente.                        |
-| user_cellphone           | VARCHAR(20)   | Número de celular do cliente.                         |
-| user_city                | VARCHAR(255)  | Cidade do cliente.                                    |
-| user_country             | VARCHAR(255)  | País do cliente.                                      |
-| user_role                | VARCHAR(255)  | Função do cliente (por exemplo, comprador, vendedor, afiliado, etc). |
-| user_cluster             | VARCHAR(255)  | Informação de segmentação do cliente.                 |
-| user_creation_date       | DATE          | Data de criação da conta do cliente.                  |
-| hub_transaction_date     | DATE          | Data da transação de dados para o registro do cliente.|
-| user_status              | VARCHAR(255)  | Status da conta do cliente (por exemplo, ativo, inativo). |
-
+| customer_id              | BIGINT        | Unique identifier for the customer (PK).             |
+| hub_index_m10_customer_id| INT           | Internal index for the customer.                      |
+| user_name                | VARCHAR(255)  | Customer name.                                        |
+| user_email               | VARCHAR(255)  | Customer email address.                               |
+| user_birthdate           | DATE          | Customer date of birth.                               |
+| user_cellphone           | VARCHAR(20)   | Customer cell phone number.                           |
+| user_city                | VARCHAR(255)  | Customer city.                                        |
+| user_country             | VARCHAR(255)  | Customer country.                                     |
+| user_role                | VARCHAR(255)  | Customer role (e.g., buyer, seller, affiliate, etc). |
+| user_cluster             | VARCHAR(255)  | Customer segmentation information.                    |
+| user_creation_date       | DATE          | Customer account creation date.                       |
+| hub_transaction_date     | DATE          | Data transaction date for the customer record.       |
+| user_status              | VARCHAR(255)  | Customer account status (e.g., active, inactive).    |
 
 ### ITEM
-| Nome do Campo                | Tipo de Dados | Descrição                                             |
+| Field Name                   | Data Type     | Description                                           |
 |------------------------------|---------------|-------------------------------------------------------|
-| item_id                      | BIGINT        | Identificador único para o item no pedido (PK).       |
-| hub_transaction_date         | DATE          | Data da transação de dados para o registro do item.   |
-| hub_index_m10_item_id       | INT           | Índice interno para o item.                           |
-| item_category_id             | BIGINT        | Identificador único para a categoria do item (FK).     |
-| hub_index_m10_item_category_id | INT         | Índice interno para a categoria do item.              |
-| user_producer_id             | BIGINT        | Identificador único para o usuário que produziu o item (FK). |
-| item_name                    | VARCHAR(255)  | Nome do item.                                         |
-| item_description             | VARCHAR(255)  | Descrição do item.                                    |
-| item_link                    | VARCHAR(255)  | Link do item.                                         |
-| item_currency_code           | VARCHAR(3)    | Código da moeda usada para o preço do item.           |
-| item_price                   | DECIMAL(10,2) | Valor do item.                                        |
-| item_distribution_form       | VARCHAR(255)  | Forma de distribuição do item (digital, físico).      |
-| item_status                  | VARCHAR(255)  | Status do item (por exemplo, ativo, inativo, indisponível). |
-| item_creation_date           | DATE          | Data de criação do item.                              |
-| item_cancellation_date       | DATE          | Data de cancelamento do item.                         |
-| item_published_date          | DATE          | Data de publicação do item.                           |
-
+| item_id                      | BIGINT        | Unique identifier for the order item (PK).           |
+| hub_transaction_date         | DATE          | Data transaction date for the item record.           |
+| hub_index_m10_item_id       | INT           | Internal index for the item.                          |
+| item_category_id             | BIGINT        | Unique identifier for the item category (FK).        |
+| hub_index_m10_item_category_id | INT         | Internal index for the item category.                |
+| user_producer_id             | BIGINT        | Unique identifier for the user who produced the item (FK). |
+| item_name                    | VARCHAR(255)  | Item name.                                            |
+| item_description             | VARCHAR(255)  | Item description.                                     |
+| item_link                    | VARCHAR(255)  | Item link.                                            |
+| item_currency_code           | VARCHAR(3)    | Currency code used for the item price.               |
+| item_price                   | DECIMAL(10,2) | Item value.                                           |
+| item_distribution_form       | VARCHAR(255)  | Item distribution form (digital, physical).          |
+| item_status                  | VARCHAR(255)  | Item status (e.g., active, inactive, unavailable).   |
+| item_creation_date           | DATE          | Item creation date.                                   |
+| item_cancellation_date       | DATE          | Item cancellation date.                               |
+| item_published_date          | DATE          | Item publication date.                                |
 
 ### ITEM CATEGORY
-| Nome do Campo                | Tipo de Dados | Descrição                                             |
+| Field Name                   | Data Type     | Description                                           |
 |------------------------------|---------------|-------------------------------------------------------|
-| item_category_id             | BIGINT        | Identificador único para a categoria do item (PK).    |
-| category_description         | VARCHAR(255)  | Descrição da categoria do item.                       |
-| hub_index_m10_item_category_id | INT         | Índice interno para a categoria do item.              |
-| is_category_enable           | BOOLEAN       | Indica se a categoria está ativa.                    |
-| item_category_name           | VARCHAR(255)  | Nome da categoria do item.                            |
-
+| item_category_id             | BIGINT        | Unique identifier for the item category (PK).        |
+| category_description         | VARCHAR(255)  | Item category description.                            |
+| hub_index_m10_item_category_id | INT         | Internal index for the item category.                |
+| is_category_enable           | BOOLEAN       | Indicates if the category is active.                 |
+| item_category_name           | VARCHAR(255)  | Item category name.                                   |
 
 ### ORDER INFO
-| Nome do Campo              | Tipo de Dados | Descrição                                                        |
+| Field Name                 | Data Type     | Description                                                      |
 |----------------------------|---------------|------------------------------------------------------------------|
-| order_id                   | BIGINT        | Identificador único para o pedido (PK).                          |
-| hub_index_m10_customer_id  | INT           | Índice interno para o cliente no pedido.                         |
-| hub_index_m10_item_id      | INT           | Índice interno para o item no pedido.                            |
-| hub_index_m10_order_id     | INT           | Índice interno para o pedido.                                    |
-| affiliation_id             | BIGINT        | Identificador único para a afiliação associada ao pedido.         |
-| hub_transaction_date       | DATE          | Data da transação de dados para o registro do pedido.             |
-| order_currency_code_from   | VARCHAR(3)    | Código da moeda usado para o preço original.                     |
-| order_currency_code_to     | VARCHAR(3)    | Código da moeda usado para o preço final.                        |
-| order_customer_ip          | VARCHAR(255)  | Endereço IP do comprador no momento do pedido.                   |
-| order_date                 | DATE          | Data de solicitação do pedido.                                   |
-| order_date_time            | DATETIME      | Data e hora da solicitação do pedido.                            |
-| order_origin               | VARCHAR(255)  | Origem do pedido (por exemplo, redes sociais, google, etc).      |
-| order_payment_type         | VARCHAR(255)  | Meio de pagamento usado para o pedido.                           |
-| order_release_date         | DATE          | Data de liberação do pedido/pagamento.                           |
-| order_release_datetime     | DATETIME      | Data e hora da liberação do pedido/pagamento (incluindo hora).  |
-| order_sale_type            | VARCHAR(255)  | Tipo de venda associada ao pedido (venda direta ou por afiliação). |
-| order_status               | VARCHAR(255)  | Status do pedido (por exemplo, pendente, enviado, cancelado).    |
-| order_value                | DECIMAL(10,2) | Valor total do pedido.                                           |
-| payment_mode_description   | VARCHAR(255)  | Descrição do meio de pagamento utilizado (parcelamento, pagamento único). |
-| user_affiliate_id          | BIGINT        | Identificador único para o usuário afiliado ao pedido (FK).     |
-| user_buyer_id              | BIGINT        | Chave estrangeira que referencia o cliente que fez o pedido (FK). |
-| user_producer_id           | BIGINT        | Identificador único para o usuário que produziu o item (FK).    |
+| order_id                   | BIGINT        | Unique identifier for the order (PK).                           |
+| hub_index_m10_customer_id  | INT           | Internal index for the customer in the order.                   |
+| hub_index_m10_item_id      | INT           | Internal index for the item in the order.                       |
+| hub_index_m10_order_id     | INT           | Internal index for the order.                                   |
+| affiliation_id             | BIGINT        | Unique identifier for the affiliation associated with the order. |
+| hub_transaction_date       | DATE          | Data transaction date for the order record.                     |
+| order_currency_code_from   | VARCHAR(3)    | Currency code used for the original price.                      |
+| order_currency_code_to     | VARCHAR(3)    | Currency code used for the final price.                         |
+| order_customer_ip          | VARCHAR(255)  | Buyer's IP address at the time of order.                        |
+| order_date                 | DATE          | Order request date.                                              |
+| order_date_time            | DATETIME      | Order request date and time.                                     |
+| order_origin               | VARCHAR(255)  | Order origin (e.g., social media, google, etc).                 |
+| order_payment_type         | VARCHAR(255)  | Payment method used for the order.                              |
+| order_release_date         | DATE          | Order/payment release date.                                      |
+| order_release_datetime     | DATETIME      | Order/payment release date and time (including time).           |
+| order_sale_type            | VARCHAR(255)  | Type of sale associated with the order (direct sale or by affiliation). |
+| order_status               | VARCHAR(255)  | Order status (e.g., pending, shipped, canceled).                |
+| order_value                | DECIMAL(10,2) | Total order value.                                               |
+| payment_mode_description   | VARCHAR(255)  | Description of payment method used (installment, single payment). |
+| user_affiliate_id          | BIGINT        | Unique identifier for the user affiliated with the order (FK).  |
+| user_buyer_id              | BIGINT        | Foreign key that references the customer who placed the order (FK). |
+| user_producer_id           | BIGINT        | Unique identifier for the user who produced the item (FK).      |
 
 ### ORDER ITEM
-| Nome do Campo        | Tipo de Dados | Descrição                                            |
+| Field Name           | Data Type     | Description                                          |
 |----------------------|---------------|------------------------------------------------------|
-| order_item_id        | BIGINT        | Identificador único para o item de pedido (PK).      |
-| hub_transaction_date | DATE          | Data da transação de dados para o registro do pedido.|
-| item_id              | BIGINT        | Identificador único para o item no pedido (FK).      |
-| order_id             | BIGINT        | Identificador único para o pedido ao qual o item de pedido pertence (FK). |
-| order_item_value     | DECIMAL(10,2) | Valor total (quantidade * preço unitário).           |
-| quantity             | INT           | Quantidade do item no pedido.                        |
-
-
-
+| order_item_id        | BIGINT        | Unique identifier for the order item (PK).          |
+| hub_transaction_date | DATE          | Data transaction date for the order record.         |
+| item_id              | BIGINT        | Unique identifier for the item in the order (FK).   |
+| order_id             | BIGINT        | Unique identifier for the order to which the order item belongs (FK). |
+| order_item_value     | DECIMAL(10,2) | Total value (quantity * unit price).                |
+| quantity             | INT           | Quantity of the item in the order.                  |
